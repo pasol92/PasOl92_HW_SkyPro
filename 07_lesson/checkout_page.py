@@ -17,6 +17,7 @@ class CheckoutPage:
 
     def get_total(self):
         total_element = self.wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "summary_total_label"))
+            EC.presence_of_element_located
+            ((By.CLASS_NAME, "summary_total_label"))
         )
         return total_element.text  # Формат: "Total: $58.29"

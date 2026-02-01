@@ -9,7 +9,8 @@ class CalculatorPage:
         self.wait = WebDriverWait(driver, 50)
 
     def open(self):
-        self.driver.get("https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html")
+        self.driver.get
+        ("https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html")
 
     def set_delay(self, delay):
         delay_input = self.driver.find_element(By.ID, "delay")
@@ -23,7 +24,7 @@ class CalculatorPage:
         button.click()
 
     def get_result(self):
-        result_element = self.wait.until(
+        self.wait.until(
             EC.text_to_be_present_in_element((By.ID, "result"), "15")
         )
         return self.driver.find_element(By.ID, "result").text

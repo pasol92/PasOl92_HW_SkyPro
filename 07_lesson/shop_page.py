@@ -13,5 +13,6 @@ class ShopPage:
         add_button.click()
 
     def go_to_cart(self):
-        cart_link = self.driver.find_element(By.CLASS_NAME, "shopping_cart_link")
+        cart_link = self.driver.find_element
+        (By.CLASS_NAME, "shopping_cart_link")
         cart_link.click()
