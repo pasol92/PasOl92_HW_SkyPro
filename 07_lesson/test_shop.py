@@ -10,8 +10,8 @@ def test_shopping_cart(firefox_driver):
     login_page.login("standard_user", "secret_sauce")
 
     shop_page = ShopPage(firefox_driver)
-    products = ["Sauce Labs Backpack", 
-                "Sauce Labs Bolt T-Shirt", 
+    products = ["Sauce Labs Backpack",
+                "Sauce Labs Bolt T-Shirt",
                 "Sauce Labs Onesie"]
     for product in products:
         shop_page.add_product_to_cart(product)
@@ -24,4 +24,3 @@ def test_shopping_cart(firefox_driver):
     checkout_page.fill_form("Иван", "Иванов", "123456")
     total = checkout_page.get_total()
     assert total == "Total: $58.29"
-    
