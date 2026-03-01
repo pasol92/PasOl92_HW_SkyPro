@@ -5,26 +5,31 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-@pytest.fixture
-def driver():
+@pytest.mark.chrome
+def test_calculator():
     driver = webdriver.Chrome()
-    driver.maximize_window()
-    yield driver
-    driver.quit()
+    wait = WebDriverWait(driver, 60)
 
+    try:
+        driver.get(
+            "https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html")
 
-def test_calculator(driver):
-    driver.get("https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html")
-    delay_input = driver.find_element(By.ID, "delay")
-    delay_input.clear()
-    delay_input.send_keys("45")
-    driver.find_element(By.XPATH, "//span[text()='7']").click()
-    driver.find_element(By.XPATH, "//span[text()='+']").click()
-    driver.find_element(By.XPATH, "//span[text()='8']").click()
-    driver.find_element(By.XPATH, "//span[text()=']").click()
-    wait = WebDriverWait(driver, 50)
-    result = wait.until(
-        EC.text_to_be_present_in_element((By.ID, "result"), "15")
-    )
-    result_element = driver.find_element(By.ID, "result")
-    assert result_element.text == "15"
+        # Ввод задержки
+        delay_input = wait.until(EC.element_to_be_clickable((By.ID, "delay")))
+        delay_input.clear()
+        delay_input.send_keys("45")
+
+        # Нажатие кнопок калькулятора
+        driver.find_element(By.XPATH, "//span[text()='7']").click()
+        driver.find_element(By.XPATH, "//span[text()='+']").click()
+        driver.find_element(By.XPATH, "//span[text()='8']").click()
+        driver.find_element(By.XPATH, "//span[text()='=']").click()
+
+        # Ожидание результата через 45 секунд
+        result_element = wait.until(
+            EC.text_to_be_present_in_element((By.CLASS_NAME, "screen"), "15")
+        )
+        assert result_element, "Результат не равен 15"
+
+    finally:
+        driver.quit()

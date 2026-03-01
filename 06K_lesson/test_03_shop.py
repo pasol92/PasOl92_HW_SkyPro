@@ -5,37 +5,51 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-@pytest.fixture
-def driver():
+@pytest.mark.firefox
+@pytest.mark.parametrize("first_name, last_name, zip_code, expected_total", [
+    ("Екатерина", "Щеглова", "653035", "Total: $58.29")
+])
+def test_purchase_flow(first_name, last_name, zip_code, expected_total):
     driver = webdriver.Firefox()
     driver.maximize_window()
-    yield driver
-    driver.quit()
+    wait = WebDriverWait(driver, 15)
 
+    try:
+        driver.get("https://www.saucedemo.com/")
 
-def test_shopping_cart(driver):
-    driver.get("https://www.saucedemo.com/")
-    driver.find_element(By.ID, "user-name").send_keys("standard_user")
-    driver.find_element(By.ID, "password").send_keys("secret_sauce")
-    driver.find_element(By.ID, "login-button").click()
-    products = [
-        "Sauce Labs Backpack",
-        "Sauce Labs Bolt T-Shirt",
-        "Sauce Labs Onesie"
-    ]
-    for product in products:
+        # Авторизация
+        wait.until(EC.element_to_be_clickable((
+            By.ID, "user-name"))).send_keys("standard_user")
+        driver.find_element(By.ID, "password").send_keys("secret_sauce")
+        driver.find_element(By.ID, "login-button").click()
+
+        # Добавление товаров в корзину
+        wait.until(EC.element_to_be_clickable((
+            By.ID, "add-to-cart-sauce-labs-backpack"))).click()
         driver.find_element(
-            By.XPATH, f"//div[text()='{product}']/following-sibling::button"
-        ).click()
-    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
-    driver.find_element(By.ID, "checkout").click()
-    driver.find_element(By.ID, "first-name").send_keys("Иван")
-    driver.find_element(By.ID, "last-name").send_keys("Иванов")
-    driver.find_element(By.ID, "postal-code").send_keys("123456")
-    driver.find_element(By.ID, "continue").click()
-    wait = WebDriverWait(driver, 10)
-    total_element = wait.until(
-        EC.presence_of_element_located((By.CLASS_NAME, "summary_total_label"))
-    )
-    total = total_element.text
-    assert total == "Total: $58.29"
+            By.ID, "add-to-cart-sauce-labs-bolt-t-shirt").click()
+        driver.find_element(By.ID, "add-to-cart-sauce-labs-onesie").click()
+
+        # Переход в корзину и оформление заказа
+        driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+        wait.until(EC.element_to_be_clickable((By.ID, "checkout"))).click()
+
+        # Заполнение формы
+        driver.find_element(By.ID, "first-name").send_keys(first_name)
+        driver.find_element(By.ID, "last-name").send_keys(last_name)
+        driver.find_element(By.ID, "postal-code").send_keys(zip_code)
+        driver.find_element(By.ID, "continue").click()
+
+        # Проверка итоговой суммы
+        total_label = wait.until(EC.presence_of_element_located((
+            By.CLASS_NAME, "summary_total_label")))
+        assert total_label.text == expected_total, f"Ожидаемая сумма {
+            expected_total}, но получено {total_label.text}"
+
+        # Завершение покупки
+        driver.find_element(By.ID, "finish").click()
+        wait.until(EC.element_to_be_clickable((
+            By.ID, "back-to-products"))).click()
+
+    finally:
+        driver.quit()
