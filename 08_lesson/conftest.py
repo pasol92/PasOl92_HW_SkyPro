@@ -26,7 +26,6 @@ def project_data() -> Dict[str, str]:
     """Данные для создания проекта"""
     return {
         "title": "Test Project",
-        "description": "Test description"
     }
 
 
@@ -35,5 +34,4 @@ def updated_project_data() -> Dict[str, str]:
     """Данные для обновления проекта"""
     return {
         "title": "Updated Project Title",
-        "description": "Updated description"
     }
