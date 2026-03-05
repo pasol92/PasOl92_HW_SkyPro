@@ -8,8 +8,7 @@ class TestProjectAPIMethods:
     def test_create_project_positive(self, api_client: YougileProjectAPI,
                                      project_data: dict):
         response = api_client.create_project(project_data)
-        assert response.status_code == 201, f"Expected 201, got {
-            response.status_code}"
+        assert response.status_code == 201, f"Expected 201, got {response.status_code}"
         response_data = response.json()
         assert 'id' in response_data
         project_id = response_data['id']
@@ -46,8 +45,7 @@ class TestProjectAPIMethods:
         """Негативный тест: попытка получения несуществующего проекта"""
         non_existent_id = str(uuid.uuid4())
         response = api_client.get_project(non_existent_id)
-        assert response.status_code == 404, f"Expected 404, got {
-            response.status_code}"
+        assert response.status_code == 404, f"Expected 404, got {response.status_code}"
 
     def test_update_project_positive(self, api_client: YougileProjectAPI,
                                      project_data: dict,
@@ -55,14 +53,12 @@ class TestProjectAPIMethods:
         """Позитивный тест: обновление существующего проекта"""
         # Создаём проект для обновления
         create_response = api_client.create_project(project_data)
-        assert create_response.status_code == 201, f"Create failed: {
-            create_response.text}"
+        assert create_response.status_code == 201, f"Create failed: {create_response.text}"
         project_id = create_response.json()['id']
 
         # Обновляем проект
         response = api_client.update_project(project_id, updated_project_data)
-        assert response.status_code == 200, f"Expected 200, got {
-            response.status_code}. Body: {response.text}"
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}. Body: {response.text}"
 
         get_response = api_client.get_project(project_id)
         assert get_response.status_code == 200
